@@ -1,5 +1,5 @@
 import ProductDetails from "./ProductDetails";
-
+import { fetchFullCatalog } from "@/lib/data-fetcher-server";
 export async function generateMetadata({ params }) {
     const { slug } = await params;
 
@@ -7,11 +7,11 @@ export async function generateMetadata({ params }) {
         ?.replace(/-/g, " ")
         ?.replace(/\b\w/g, (c) => c.toUpperCase());
 
-    const title = `${productName} Supplier in India | Price, Dealer & Distributor | Central Biomedicals`;
+    const title = `${productName} Supplier in India | Price, Dealer & Distributor | Raj Biosis`;
 
-    const description = `Buy ${productName} at best price in India. Trusted supplier, dealer and distributor of ${productName} for hospitals, laboratories, diagnostic centers, research institutes and healthcare facilities. Contact Central Biomedicals for latest quotation and product details.`;
+    const description = `Buy ${productName} at best price in India. Trusted supplier, dealer and distributor of ${productName} for hospitals, laboratories, diagnostic centers, research institutes and healthcare facilities. Contact Raj Biosis for latest quotation and product details.`;
 
-    const url = `https://centralbiomedicals.com/items/${slug}`;
+    const url = `https://ozonex.co/items/${slug}`;
 
     return {
         title,
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
             "Diagnostic Equipment",
             "Hospital Equipment",
             "Healthcare Equipment",
-            "Central Biomedicals",
+            "Raj Biosis",
         ],
 
         alternates: {
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
             title,
             description,
             url,
-            siteName: "Central Biomedicals",
+            siteName: "Raj Biosis",
             type: "website",
             locale: "en_IN",
         },
@@ -73,12 +73,14 @@ export async function generateMetadata({ params }) {
             },
         },
 
-        metadataBase: new URL("https://centralbiomedials.com"),
+        metadataBase: new URL("https://ozonex.co"),
     };
 }
 
 export default async function Page({ params }) {
     const { slug } = await params;
+    const allProducts = await fetchFullCatalog();
+    const product = allProducts.find((p) => p.slug === slug) || null;
 
-    return <ProductDetails slug={slug} />;
+    return <ProductDetails slug={slug} product={product} />;
 }

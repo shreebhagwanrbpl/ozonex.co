@@ -1,21 +1,15 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-
 import CBG from "../components/img/CBG.png";
-
 import {
   ArrowRight,
   ShieldCheck,
   Microscope,
   BadgeCheck,
 } from "lucide-react";
-
 export default function HeroSection({ city }) {
   const [loading, setLoading] = useState(true);
 
@@ -24,14 +18,17 @@ export default function HeroSection({ city }) {
     description: "",
     button1Text: "",
     button2Text: "",
+    badge: "",
   });
 
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        const snap = await getDoc(
-          doc(db, "websites", "centralbiomedicals", "pages", "home")
-        );
+        const snap = await (async () => {
+          const response = await fetch("/api/site-data?pageType=home", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const json = await response.json().catch(() => ({}));
+          return { exists: () => !!json.data, data: () => json.data || {} };
+        })();
 
         if (snap.exists()) {
           setHeroData(snap.data());
@@ -77,13 +74,12 @@ export default function HeroSection({ city }) {
 
           {/* Badge */}
 
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-[#D1FAE5] shadow-md text-[#0F766E] font-medium">
-
-            <ShieldCheck size={18} />
-
-            Trusted Biomedical Company
-
-          </span>
+          {heroData.badge ? (
+            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-[#D1FAE5] shadow-md text-[#0F766E] font-medium">
+              <ShieldCheck size={18} />
+              {heroData.badge}
+            </span>
+          ) : null}
 
           {/* Title */}
 
@@ -129,84 +125,29 @@ export default function HeroSection({ city }) {
 
           <div className="flex justify-center flex-wrap gap-4 mt-10">
 
-            <Link href={makeLink("/services")}>
+            {heroData.button1Text ? <Link href={makeLink("/items")}>
 
               <button className="bg-[#0F766E] hover:bg-[#115E59] text-white rounded-xl px-8 py-4 font-semibold shadow-lg transition-all duration-300 hover:scale-105">
 
-                {heroData.button1Text || "Explore Services"}
+                {heroData.button1Text}
 
               </button>
 
-            </Link>
+            </Link> : null}
 
-            <Link href={makeLink("/contact")}>
+            {heroData.button2Text ? <Link href={makeLink("/contact")}>
 
               <button className="bg-white border-2 border-[#D1FAE5] hover:border-[#0F766E] hover:bg-[#ECFDF5] rounded-xl px-8 py-4 font-semibold text-[#0F172A] transition-all duration-300">
 
-                {heroData.button2Text || "Contact Us"}
+                {heroData.button2Text}
 
               </button>
 
-            </Link>
+            </Link> : null}
 
           </div>
 
         </motion.div>
-
-        {/* Stats */}
-
-        <div className="grid md:grid-cols-4 gap-6 mt-24">
-
-          <div className="bg-white rounded-3xl border border-[#D1FAE5] shadow-lg p-8 text-center hover:-translate-y-2 transition">
-
-            <h2 className="text-5xl font-black text-[#0F766E]">
-              10+
-            </h2>
-
-            <p className="mt-3 text-[#64748B]">
-              Years Experience
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl border border-[#D1FAE5] shadow-lg p-8 text-center hover:-translate-y-2 transition">
-
-            <h2 className="text-5xl font-black text-[#0F766E]">
-              500+
-            </h2>
-
-            <p className="mt-3 text-[#64748B]">
-              Products Delivered
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl border border-[#D1FAE5] shadow-lg p-8 text-center hover:-translate-y-2 transition">
-
-            <h2 className="text-5xl font-black text-[#0F766E]">
-              24×7
-            </h2>
-
-            <p className="mt-3 text-[#64748B]">
-              Technical Support
-            </p>
-
-          </div>
-
-          <div className="bg-white rounded-3xl border border-[#D1FAE5] shadow-lg p-8 text-center hover:-translate-y-2 transition">
-
-            <h2 className="text-5xl font-black text-[#0F766E]">
-              100%
-            </h2>
-
-            <p className="mt-3 text-[#64748B]">
-              Quality Assurance
-            </p>
-
-          </div>
-
-        </div>
-
       </div>
 
     </section>

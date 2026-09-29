@@ -1,18 +1,18 @@
+import CatalogRealtimeSync from "@/components/CatalogRealtimeSync";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
-
 export const metadata = {
   metadataBase: new URL(
-    "https://centralbiomedicals.com"
+    "https://ozonex.co"
   ),
 
   title:
-    "Biomedical Equipment Supplier in India | Central Biomedicals",
+    "Biomedical Equipment Supplier in India | Raj Biosis",
 
   description:
-    "Central Biomedicals supplies CBC Machines, Hematology Analyzers, Biochemistry Analyzers, ELISA Readers and laboratory equipment across India.",
+    "Raj Biosis supplies CBC Machines, Hematology Analyzers, Biochemistry Analyzers, ELISA Readers and laboratory equipment across India.",
 
   keywords: [
     "Biomedical Equipment Supplier",
@@ -26,21 +26,21 @@ export const metadata = {
 
   openGraph: {
     title:
-      "Biomedical Equipment Supplier in India | Central Biomedicals",
+      "Biomedical Equipment Supplier in India | Raj Biosis",
 
     description:
       "Supplier of biomedical and laboratory equipment across India.",
 
-    url: "https://centralbiomedicals.com",
+    url: "https://ozonex.co",
 
-    siteName: "Central Biomedicals",
+    siteName: "Raj Biosis",
 
     images: [
       {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Central Biomedicals",
+        alt: "Raj Biosis",
       },
     ],
 
@@ -52,7 +52,7 @@ export const metadata = {
     card: "summary_large_image",
 
     title:
-      "Biomedical Equipment Supplier in India | Central Biomedicals",
+      "Biomedical Equipment Supplier in India | Raj Biosis",
 
     description:
       "Supplier of biomedical and laboratory equipment across India.",
@@ -61,7 +61,7 @@ export const metadata = {
   },
 
   alternates: {
-    canonical: "https://centralbiomedicals.com",
+    canonical: "https://ozonex.co",
   },
 };
 
@@ -85,6 +85,7 @@ export default function RootLayout({
         </main>
 
         <Footer />
+      <CatalogRealtimeSync />
       </body>
     </html>
   );

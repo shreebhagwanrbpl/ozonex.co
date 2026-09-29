@@ -1,9 +1,7 @@
 "use client";
-
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
 import {
   ShieldCheck,
   Truck,
@@ -12,11 +10,9 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-
 import PageBanner from "@/components/PageBanner";
 import SectionTitle from "@/components/SectionTitle";
 import CTASection from "@/components/CTASection";
-
 export default function ProductsPage() {
 
   const products = [
@@ -175,286 +171,287 @@ export default function ProductsPage() {
   };
 
   return (
-  <>
-    <PageBanner
-      title="Our Products"
-      subtitle="Explore advanced biomedical and diagnostic equipment designed for modern healthcare excellence."
-    />
+    <>
+      <PageBanner
+        title="Our Products"
+        subtitle="Explore advanced biomedical and diagnostic equipment designed for modern healthcare excellence."
+      />
 
-    <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-slate-50">
 
-      <div className="max-w-7xl mx-auto px-5">
+        <div className="max-w-7xl mx-auto px-5">
 
-        <SectionTitle
-          badge="Featured Products"
-          title="Premium Biomedical Equipment"
-          description="Discover premium diagnostic products for hospitals and laboratories."
-          center
-        />
+          <SectionTitle
+            badge="Featured Products"
+            title="Premium Biomedical Equipment"
+            description="Discover premium diagnostic products for hospitals and laboratories."
+            center
+          />
 
-        <div className="grid lg:grid-cols-[320px_1fr] gap-10 mt-16">
+          <div className="grid lg:grid-cols-[320px_1fr] gap-10 mt-16">
 
-          {/* ======================
+            {/* ======================
                 LEFT SIDEBAR
           ====================== */}
 
-          <aside className="sticky top-28 h-fit bg-white rounded-3xl border border-slate-200 shadow-xl p-6">
+            <aside className="sticky top-28 h-fit bg-white rounded-3xl border border-slate-200 shadow-xl p-6">
 
-            <h2 className="text-2xl font-bold">
+              <h2 className="text-2xl font-bold">
 
-              Categories
+                Categories
 
-            </h2>
+              </h2>
 
-            <input
-              type="text"
-              placeholder="Search Product..."
-              value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-              className="w-full h-12 mt-5 rounded-xl border border-slate-300 px-4 outline-none focus:border-sky-600"
-            />
+              <input
+                type="text"
+                placeholder="Search Product..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+                className="w-full h-12 mt-5 rounded-xl border border-slate-300 px-4 outline-none focus:border-sky-600"
+              />
 
-            <div className="mt-6 space-y-3">
+              <div className="mt-6 space-y-3">
 
-              {categories.map((category) => (
-
-                <div
-                  key={category}
-                  className="rounded-xl border border-slate-200 overflow-hidden"
-                >
-
-                  <button
-                    onClick={() =>
-                      toggleCategory(category)
-                    }
-                    className={`w-full flex items-center justify-between px-5 py-4 transition
-
-                    ${
-                      activeCategory === category
-                        ? "bg-sky-700 text-white"
-                        : "bg-white hover:bg-slate-50"
-                    }
-                    `}
-                  >
-
-                    <span className="flex items-center gap-3">
-
-                      {openedCategory === category ? (
-                        <ChevronDown size={18} />
-                      ) : (
-                        <ChevronRight size={18} />
-                      )}
-
-                      {category}
-
-                    </span>
-
-                    <span className="text-sm font-semibold">
-
-                      {
-                        groupedProducts[
-                          category
-                        ].length
-                      }
-
-                    </span>
-
-                  </button>
+                {categories.map((category) => (
 
                   <div
-                    className="overflow-hidden transition-all duration-300"
-                    style={{
-                      maxHeight:
-                        openedCategory === category
-                          ? groupedProducts[
-                              category
-                            ].length *
-                              46 +
-                            "px"
-                          : "0px",
-                    }}
-                  >
-
-                    {groupedProducts[
-                      category
-                    ].map((item) => (
-
-                      <button
-                        key={item.slug}
-                        onClick={() =>
-                          scrollToProduct(
-                            item.slug,
-                            category
-                          )
-                        }
-                        className="block w-full text-left px-6 py-3 border-t border-slate-100 hover:bg-slate-50 text-sm"
-                      >
-
-                        {item.title}
-
-                      </button>
-
-                    ))}
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          </aside>
-
-          {/* ======================
-                RIGHT SIDE
-          ====================== */}
-
-          <div>
-
-            <div className="space-y-12">
-
-                            {Object.entries(groupedProducts).map(
-                ([category, list]) => (
-
-                  <section
                     key={category}
-                    id={category
-                      .replace(/\s+/g, "-")
-                      .toLowerCase()}
+                    className="rounded-xl border border-slate-200 overflow-hidden"
                   >
 
-                    {/* CATEGORY TITLE */}
+                    <button
+                      onClick={() =>
+                        toggleCategory(category)
+                      }
+                      className={`w-full flex items-center justify-between px-5 py-4 transition
 
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-8">
+                    ${activeCategory === category
+                          ? "bg-sky-700 text-white"
+                          : "bg-white hover:bg-slate-50"
+                        }
+                    `}
+                    >
 
-                      <h2 className="text-3xl font-bold text-slate-900">
+                      <span className="flex items-center gap-3">
+
+                        {openedCategory === category ? (
+                          <ChevronDown size={18} />
+                        ) : (
+                          <ChevronRight size={18} />
+                        )}
 
                         {category}
 
-                      </h2>
+                      </span>
 
-                      <span className="text-slate-500 font-medium">
+                      <span className="text-sm font-semibold">
 
-                        {list.length} Products
+                        {
+                          groupedProducts[
+                            category
+                          ].length
+                        }
 
                       </span>
 
-                    </div>
+                    </button>
 
-                    <div className="space-y-6">
+                    <div
+                      className="overflow-hidden transition-all duration-300"
+                      style={{
+                        maxHeight:
+                          openedCategory === category
+                            ? groupedProducts[
+                              category
+                            ].length *
+                            46 +
+                            "px"
+                            : "0px",
+                      }}
+                    >
 
-                      {list.map((product) => (
+                      {groupedProducts[
+                        category
+                      ].map((item) => (
 
-                        <div
-                          key={product.slug}
-                          id={product.slug}
-                          className="bg-white rounded-[28px] border border-slate-200 shadow-lg p-7 hover:shadow-xl transition"
+                        <button
+                          key={item.slug}
+                          onClick={() =>
+                            scrollToProduct(
+                              item.slug,
+                              category
+                            )
+                          }
+                          className="block w-full text-left px-6 py-3 border-t border-slate-100 hover:bg-slate-50 text-sm"
                         >
 
-                          <div className="grid lg:grid-cols-[250px_1fr_180px] gap-8 items-center">
+                          {item.title}
 
-                            {/* IMAGE */}
-
-                            <div className="bg-slate-100 rounded-2xl h-[220px] flex items-center justify-center overflow-hidden">
-
-                              <Image
-                                src={product.image}
-                                alt={product.title}
-                                width={220}
-                                height={220}
-                                className="object-contain max-h-[180px]"
-                              />
-
-                            </div>
-
-                            {/* CONTENT */}
-
-                            <div>
-
-                              <h3 className="text-2xl font-bold text-slate-900">
-
-                                {product.title}
-
-                              </h3>
-
-                              <p className="mt-4 text-slate-600 leading-8">
-
-                                {product.description}
-
-                              </p>
-
-                              <div className="grid grid-cols-2 gap-4 mt-6">
-
-                                <div className="rounded-xl bg-slate-50 p-4">
-
-                                  <p className="text-xs uppercase text-slate-500">
-
-                                    Brand
-
-                                  </p>
-
-                                  <p className="font-semibold mt-1">
-
-                                    {product.brand}
-
-                                  </p>
-
-                                </div>
-
-                                <div className="rounded-xl bg-slate-50 p-4">
-
-                                  <p className="text-xs uppercase text-slate-500">
-
-                                    Model
-
-                                  </p>
-
-                                  <p className="font-semibold mt-1">
-
-                                    {product.model}
-
-                                  </p>
-
-                                </div>
-
-                              </div>
-
-                            </div>
-
-                            {/* BUTTON */}
-
-                            <div className="flex justify-center lg:justify-end">
-
-                              <Link
-                                href={`/products/${product.slug}`}
-                                className="w-full lg:w-auto"
-                              >
-
-                                <button className="bg-sky-700 hover:bg-sky-800 text-white font-semibold px-8 py-4 rounded-xl transition w-full">
-
-                                  View Details
-
-                                </button>
-
-                              </Link>
-
-                            </div>
-
-                          </div>
-
-                        </div>
+                        </button>
 
                       ))}
 
                     </div>
 
-                  </section>
+                  </div>
 
-                )
-              )}
+                ))}
+
+              </div>
+
+            </aside>
+
+            {/* ======================
+                RIGHT SIDE
+          ====================== */}
+
+            <div>
+
+              <div className="space-y-12">
+
+                {Object.entries(groupedProducts).map(
+                  ([category, list]) => (
+
+                    <section
+                      key={category}
+                      id={category
+                        .replace(/\s+/g, "-")
+                        .toLowerCase()}
+                    >
+
+                      {/* CATEGORY TITLE */}
+
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-8">
+
+                        <h2 className="text-3xl font-bold text-slate-900">
+
+                          {category}
+
+                        </h2>
+
+                        <span className="text-slate-500 font-medium">
+
+                          {list.length} Products
+
+                        </span>
+
+                      </div>
+
+                      <div className="space-y-6">
+
+                        {list.map((product) => (
+
+                          <div
+                            key={product.slug}
+                            id={product.slug}
+                            className="bg-white rounded-[28px] border border-slate-200 shadow-lg p-7 hover:shadow-xl transition"
+                          >
+
+                            <div className="grid lg:grid-cols-[250px_1fr_180px] gap-8 items-center">
+
+                              {/* IMAGE */}
+
+                              <div className="bg-slate-100 rounded-2xl h-[220px] flex items-center justify-center overflow-hidden">
+
+                                <Image
+                                  src={product.image}
+                                  alt={product.title}
+                                  width={220}
+                                  height={220}
+                                  className="object-contain max-h-[180px]"
+                                />
+
+                              </div>
+
+                              {/* CONTENT */}
+
+                              <div>
+
+                                <h3 className="text-2xl font-bold text-slate-900">
+
+                                  {product.title}
+
+                                </h3>
+
+                                <p className="mt-4 text-slate-600 leading-8">
+
+                                  {product.description}
+
+                                </p>
+
+                                <div className="grid grid-cols-2 gap-4 mt-6">
+
+                                  <div className="rounded-xl bg-slate-50 p-4">
+
+                                    <p className="text-xs uppercase text-slate-500">
+
+                                      Brand
+
+                                    </p>
+
+                                    <p className="font-semibold mt-1">
+
+                                      {product.brand}
+
+                                    </p>
+
+                                  </div>
+
+                                  <div className="rounded-xl bg-slate-50 p-4">
+
+                                    <p className="text-xs uppercase text-slate-500">
+
+                                      Model
+
+                                    </p>
+
+                                    <p className="font-semibold mt-1">
+
+                                      {product.model}
+
+                                    </p>
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                              {/* BUTTON */}
+
+                              <div className="flex justify-center lg:justify-end">
+
+                                <Link
+                                  href={`/products/${product.slug}`}
+                                  className="w-full lg:w-auto"
+                                >
+
+                                  <button className="bg-sky-700 hover:bg-[#115E59] text-white font-semibold px-8 py-4 rounded-xl transition w-full">
+
+                                    View Details
+
+                                  </button>
+
+                                </Link>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        ))}
+
+                      </div>
+
+                    </section>
+
+                  )
+                )}
+
+              </div>
 
             </div>
 
@@ -462,11 +459,9 @@ export default function ProductsPage() {
 
         </div>
 
-      </div>
+      </section>
 
-    </section>
-
-          {/* ===========================
+      {/* ===========================
             WHY CHOOSE US
       =========================== */}
 

@@ -40,7 +40,7 @@ export default function SeoContent({ city = "" }) {
                     <div className="mt-10 space-y-7 text-lg leading-9 text-[#475569]">
 
                         <p>
-                            Central Biomedicals is a trusted supplier of biomedical and
+                            Raj Biosis is a trusted supplier of biomedical and
                             laboratory equipment in <strong>{location}</strong>. We provide
                             CBC Machines, Hematology Analyzers, Biochemistry Analyzers,
                             Urine Analyzers, ELISA Readers and other advanced diagnostic

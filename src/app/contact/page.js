@@ -1,13 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  doc,
-  getDoc,
-  addDoc,
-  collection,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import {
   Mail,
@@ -15,10 +8,8 @@ import {
   MapPin,
   Clock3,
 } from "lucide-react";
-
 import PageBanner from "@/components/PageBanner";
 import CTASection from "@/components/CTASection";
-
 export default function ContactPage() {
   const [loading, setLoading] = useState(true);
   const [districtData, setDistrictData] =
@@ -80,18 +71,15 @@ export default function ContactPage() {
     try {
       setSubmitting(true);
 
-      await addDoc(
-        collection(
-          db,
-          "websitesQueries",
-          "centralbiomedicals",
-          "contactQueries"
-        ),
-        {
-          ...form,
-          createdAt: new Date(),
-        }
-      );
+      await fetch("/api/contact-query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form }),
+      }).then(async (response) => {
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.success === false) throw new Error(result.error || "Submission failed");
+        return result;
+      });
 
       toast.success(
         "Message submitted successfully"
@@ -125,15 +113,11 @@ export default function ContactPage() {
       if (!currentDistrict) return;
 
       try {
-        const snap = await getDoc(
-          doc(
-            db,
-            "websites",
-            "centralbiomedicals",
-            "districts",
-            currentDistrict
-          )
-        );
+        const snap = await (async () => {
+          const response = await fetch(`/api/site-data?pageType=district&district=${encodeURIComponent(currentDistrict)}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const json = await response.json().catch(() => ({}));
+          return { exists: () => !!json.data, data: () => json.data || {} };
+        })();
 
         if (snap.exists()) {
           setDistrictData(snap.data());
@@ -148,15 +132,11 @@ export default function ContactPage() {
   useEffect(() => {
     const loadContact = async () => {
       try {
-        const snap = await getDoc(
-          doc(
-            db,
-            "websites",
-            "centralbiomedicals",
-            "pages",
-            "contact"
-          )
-        );
+        const snap = await (async () => {
+          const response = await fetch("/api/site-data?pageType=contact", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const json = await response.json().catch(() => ({}));
+          return { exists: () => !!json.data, data: () => json.data || {} };
+        })();
 
         if (snap.exists()) {
           setContactInfo(
@@ -177,17 +157,17 @@ export default function ContactPage() {
 
   const phone =
     contactInfo.find(
-      (x) => x.label === "Phone Number"
+      (x) => x.label === "Phone"
     )?.value || "";
 
   const email =
     contactInfo.find(
-      (x) => x.label === "Email Address"
+      (x) => x.label === "Email"
     )?.value || "";
 
   const address =
     contactInfo.find(
-      (x) => x.label === "Office Address"
+      (x) => x.label === "Address"
     )?.value || "";
 
   const hours =
@@ -241,7 +221,7 @@ export default function ContactPage() {
       {/* Banner */}
       <PageBanner
         title="Contact Us"
-        subtitle="Get in touch with Central Biomedicals for premium diagnostic and biomedical solutions."
+        subtitle="Get in touch with Raj Biosis for premium diagnostic and biomedical solutions."
       />
 
       {/* Contact Section */}

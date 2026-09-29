@@ -1,140 +1,56 @@
-import { db } from "@/lib/firebase";
-import {
-    collection,
-    getDocs,
-    doc,
-    getDoc,
-} from "firebase/firestore";
+import { fetchFullCatalog, fetchDistricts } from "@/lib/data-fetcher";
+import { WEBSITE_ID } from "@/lib/catalog-utils";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const BASE_URL = "https://ozonex.co";
 
 export default async function sitemap() {
-    const baseUrl =
-        "https://centralbiomedicals.com";
+  const [products, districts] = await Promise.all([
+    fetchFullCatalog({ websiteId: WEBSITE_ID }),
+    fetchDistricts({ websiteId: WEBSITE_ID }).catch(() => []),
+  ]);
 
-    const urls = [];
+  const now = new Date();
+  const urls = [
+    { url: BASE_URL, lastModified: now },
+    { url: `${BASE_URL}/about`, lastModified: now },
+    { url: `${BASE_URL}/services`, lastModified: now },
+    { url: `${BASE_URL}/contact`, lastModified: now },
+    { url: `${BASE_URL}/items`, lastModified: now },
+  ];
 
-    // Static Pages
-    urls.push(
-        {
-            url: baseUrl,
-            lastModified: new Date(),
-        },
-        {
-            url: `${baseUrl}/about`,
-            lastModified: new Date(),
-        },
-        {
-            url: `${baseUrl}/services`,
-            lastModified: new Date(),
-        },
-        {
-            url: `${baseUrl}/contact`,
-            lastModified: new Date(),
-        },
-        {
-            url: `${baseUrl}/items`,
-            lastModified: new Date(),
-        }
-    );
-
-    try {
-        // DISTRICTS
-        const districtSnap =
-            await getDocs(
-                collection(
-                    db,
-                    "websites",
-                    "centralbiomedicals",
-                    "districts"
-                )
-            );
-
-        const districts =
-            districtSnap.docs.map(
-                (doc) => doc.data()
-            );
-
-        districts.forEach((district) => {
-            const slug =
-                district.slug;
-
-            if (!slug) return;
-
-            urls.push(
-                {
-                    url: `${baseUrl}/${slug}`,
-                    lastModified:
-                        new Date(),
-                },
-                {
-                    url: `${baseUrl}/${slug}/about`,
-                    lastModified:
-                        new Date(),
-                },
-                {
-                    url: `${baseUrl}/${slug}/services`,
-                    lastModified:
-                        new Date(),
-                },
-                {
-                    url: `${baseUrl}/${slug}/contact`,
-                    lastModified:
-                        new Date(),
-                },
-                {
-                    url: `${baseUrl}/${slug}/items`,
-                    lastModified:
-                        new Date(),
-                }
-            );
-        });
-
-        // PRODUCTS
-        const productDoc =
-            await getDoc(
-                doc(
-                    db,
-                    "websites",
-                    "centralbiomedicals",
-                    "pages",
-                    "products"
-                )
-            );
-
-        const products =
-            productDoc.data()
-                ?.products || [];
-
-        products.forEach(
-            (product) => {
-                if (!product.slug) return;
-
-                // Main Product URL
-                urls.push({
-                    url: `${baseUrl}/items/${product.slug}`,
-                    lastModified:
-                        new Date(),
-                });
-
-                // District Product URLs
-                districts.forEach(
-                    (district) => {
-                        if (!district.slug) return;
-
-                        urls.push({
-                            url: `${baseUrl}/${district.slug}/items/${product.slug}`,
-                            lastModified:
-                                new Date(),
-                        });
-                    }
-                );
-            }
-        );
-    } catch (error) {
-        console.error(
-            "Sitemap Error:",
-            error
-        );
+  const seen = new Set(urls.map((item) => item.url));
+  for (const district of districts) {
+    const slug = district.slug || district.id;
+    if (!slug) continue;
+    const base = `${BASE_URL}/${slug}`;
+    for (const suffix of ["", "/about", "/services", "/contact", "/items"]) {
+      const url = `${base}${suffix}`;
+      if (!seen.has(url)) {
+        seen.add(url);
+        urls.push({ url, lastModified: now });
+      }
     }
+  }
 
-    return urls;
+  for (const product of products) {
+    if (!product.slug) continue;
+    const url = `${BASE_URL}/items/${product.slug}`;
+    if (!seen.has(url)) {
+      seen.add(url);
+      urls.push({ url, lastModified: now });
+    }
+    for (const district of districts) {
+      const districtSlug = district.slug || district.id;
+      if (!districtSlug) continue;
+      const districtUrl = `${BASE_URL}/${districtSlug}/items/${product.slug}`;
+      if (!seen.has(districtUrl)) {
+        seen.add(districtUrl);
+        urls.push({ url: districtUrl, lastModified: now });
+      }
+    }
+  }
+
+  return urls;
 }

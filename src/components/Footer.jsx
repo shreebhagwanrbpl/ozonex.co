@@ -1,8 +1,6 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getContactValue, parseContactValues, phoneHref, mailHref } from "@/lib/contact-utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,7 +8,6 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
-
 export default function Footer() {
   const [contactInfo, setContactInfo] =
     useState([]);
@@ -41,15 +38,11 @@ export default function Footer() {
   useEffect(() => {
     const loadContact = async () => {
       try {
-        const snap = await getDoc(
-          doc(
-            db,
-            "websites",
-            "centralbiomedicals",
-            "pages",
-            "contact"
-          )
-        );
+        const snap = await (async () => {
+          const response = await fetch("/api/site-data?pageType=contact", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const json = await response.json().catch(() => ({}));
+          return { exists: () => !!json.data, data: () => json.data || {} };
+        })();
 
         if (snap.exists()) {
           setContactInfo(
@@ -72,15 +65,11 @@ export default function Footer() {
       if (!district) return;
 
       try {
-        const snap = await getDoc(
-          doc(
-            db,
-            "websites",
-            "centralbiomedicals",
-            "districts",
-            district
-          )
-        );
+        const snap = await (async () => {
+          const response = await fetch(`/api/site-data?pageType=district&district=${encodeURIComponent(district)}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          const json = await response.json().catch(() => ({}));
+          return { exists: () => !!json.data, data: () => json.data || {} };
+        })();
 
         if (snap.exists()) {
           setDistrictData(snap.data());
@@ -93,19 +82,14 @@ export default function Footer() {
     loadDistrict();
   }, [district]);
 
-  const phone =
-    contactInfo.find(
-      (x) => x.label === "Phone Number"
-    )?.value || "";
-
-  const email =
-    contactInfo.find(
-      (x) => x.label === "Email Address"
-    )?.value || "";
+  const phone = getContactValue(contactInfo, ["Phone", "Phone Number", "Mobile", "Mobile Number", "Contact"]);
+  const phoneNumbers = parseContactValues(phone);
+  const email = getContactValue(contactInfo, ["Email", "Email Address", "Mail"]);
+  const emailAddresses = parseContactValues(email);
 
   const address =
     contactInfo.find(
-      (x) => x.label === "Office Address"
+      (x) => x.label === "Address"
     )?.value || "";
 
   const dynamicAddress =
@@ -160,9 +144,9 @@ export default function Footer() {
 
           <div>
             <h2 className="text-2xl font-bold text-sky-700">
-              Central
+              Raj
               <span className="text-slate-900">
-                {" "}Biomedicals
+                {" "}Biosis
               </span>
             </h2>
 
@@ -237,7 +221,7 @@ export default function Footer() {
                   size={18}
                   className="text-sky-700"
                 />
-                <p>{phone}</p>
+                <div>{phoneNumbers.map((number, index) => <a key={index} href={phoneHref(number) || "#"} className="block">{number}</a>)}</div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -245,7 +229,7 @@ export default function Footer() {
                   size={18}
                   className="text-sky-700"
                 />
-                <p>{email}</p>
+                <div>{emailAddresses.map((address, index) => <a key={index} href={mailHref(address) || "#"} className="block">{address}</a>)}</div>
               </div>
 
             </div>
@@ -256,7 +240,7 @@ export default function Footer() {
         <div className="border-t border-slate-200 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
 
           <p>
-            © 2026 Central Biomedicals.
+            © 2026 Raj Biosis.
             All rights reserved.
           </p>
 
