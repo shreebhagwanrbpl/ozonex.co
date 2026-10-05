@@ -15,11 +15,61 @@ export default function Footer() {
   const [districtData, setDistrictData] =
     useState(null);
 
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await fetch("/api/catalog", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        const json = await res.json().catch(() => ({}));
+        if (
+          json?.categories &&
+          Array.isArray(json.categories) &&
+          json.categories.length > 0
+        ) {
+          const catNames = json.categories
+            .map((c) => c.category || c.name || c.id || c)
+            .filter(Boolean);
+          setCategories(catNames);
+        } else if (
+          json?.products &&
+          Array.isArray(json.products) &&
+          json.products.length > 0
+        ) {
+          const uniqueCats = Array.from(
+            new Set(json.products.map((p) => p.category).filter(Boolean))
+          );
+          setCategories(uniqueCats);
+        } else {
+          setCategories([
+            "Electrolyte Reagents",
+            "Rapid Test Kits",
+            "Hematology",
+            "Biomedical Equipment",
+            "Laboratory Solutions",
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load categories for footer:", err);
+        setCategories([
+          "Electrolyte Reagents",
+          "Rapid Test Kits",
+          "Hematology",
+          "Biomedical Equipment",
+          "Laboratory Solutions",
+        ]);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
   const pathname = usePathname();
 
-  const pathParts = pathname
-    .split("/")
-    .filter(Boolean);
+  const pathParts = pathname ? pathname.split("/").filter(Boolean) : [];
 
   const staticRoutes = [
     "about",
@@ -190,14 +240,19 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold mb-5">
-              Services
+              Products
             </h3>
 
             <div className="flex flex-col gap-3 text-slate-600">
-              <p>Diagnostic Equipment</p>
-              <p>Laboratory Solutions</p>
-              <p>Biomedical Instruments</p>
-              <p>Maintenance Support</p>
+              {categories.slice(0, 6).map((catName, index) => (
+                <Link
+                  key={index}
+                  href={makeLink(`/items?category=${encodeURIComponent(catName)}`)}
+                  className="hover:text-sky-700 transition"
+                >
+                  {catName}
+                </Link>
+              ))}
             </div>
           </div>
 

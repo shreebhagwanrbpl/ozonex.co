@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState, useCallback, memo, Profiler } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ShieldCheck,
   Truck,
@@ -279,6 +280,38 @@ export default function ProductsClient({ initialProducts = [], district = null, 
     return () => clearTimeout(timer);
   }, [openedCategory, pendingScroll]);
 
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams ? searchParams.get("category") : null;
+
+  // Handle URL category param navigation and auto-scroll
+  useEffect(() => {
+    if (!categoryParam) return;
+    const targetQuery = categoryParam.trim().toLowerCase();
+    const allCategories = Object.keys(sortedGroupedProducts);
+    const matched = allCategories.find(
+      (c) =>
+        c.toLowerCase() === targetQuery ||
+        c.replace(/\s+/g, "-").toLowerCase() ===
+          targetQuery.replace(/\s+/g, "-").toLowerCase()
+    );
+
+    if (matched) {
+      setOpenedCategory(matched);
+      setActiveCategory(matched);
+      const sectionId = matched.replace(/\s+/g, "-").toLowerCase();
+      const timer = setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [categoryParam, sortedGroupedProducts]);
+
   // Scroll back to top visibility
   useEffect(() => {
     const handleScroll = () => {
@@ -437,6 +470,7 @@ export default function ProductsClient({ initialProducts = [], district = null, 
                   <section
                     key={category}
                     id={category.replace(/\s+/g, "-").toLowerCase()}
+                    className="scroll-mt-28"
                   >
                     {/* Category Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 pb-4 lg:pb-5 mb-8">

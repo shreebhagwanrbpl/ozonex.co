@@ -366,14 +366,7 @@ export default function ContactPage() {
                 className="w-full border border-slate-200 rounded-2xl px-5 py-4 outline-none focus:border-sky-600"
               />
 
-              <input
-                type="text"
-                name="subject"
-                placeholder="Subject"
-                value={form.subject}
-                onChange={handleChange}
-                className="w-full border border-slate-200 rounded-2xl px-5 py-4 outline-none focus:border-sky-600"
-              />
+
 
               <textarea
                 rows={5}
